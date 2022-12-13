@@ -1,4 +1,14 @@
-http://localhost:3000/
+GET http://localhost:3000/users/15
 
 ###
 
+POST http://localhost:3000/users
+
+###
+
+POST http://localhost:3000/users/15/nickname
+Content-Type: application/json
+
+{
+ "nickname": "bar"
+}
