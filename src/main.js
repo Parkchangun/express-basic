@@ -11,7 +11,8 @@ const USERS = {
 const PORT = 3000;
 const app = express();
 app.use(express.json());
-
+app.set("views", "src/views");
+app.set("view engine", "pug");
 
 userRouter.param("id", (req, res, next, value) => {
   console.log("🚀 ~ file: main.js:14 ~ userRouter.param ~ value", value);
@@ -30,8 +31,17 @@ userRouter.get("/:id", (req, res) => {
   if (!req.user) {
     res.status(404);
   }
-  //@ts-ignore
-  res.send(req.user);
+
+  const resMimeType = req.accepts(["json", "html"]);
+
+  if (resMimeType === "json") {
+    //@ts-ignore
+    res.send(req.user);
+  }
+  if (resMimeType === "html") {
+    //@ts-ignore
+    res.render("user-profile", { nickname: req.user.nickname });
+  }
 });
 
 userRouter.post("/", (req, res) => {
@@ -52,6 +62,9 @@ userRouter.post("/:id/nickname", (req, res) => {
 });
 
 app.use("/users", userRouter);
+app.use("/", (req, res) => {
+  
+});
 
 app.listen(PORT, () => {
   console.log(`The Express server is listening at prot: ${PORT}`);
