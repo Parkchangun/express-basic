@@ -1,27 +1,35 @@
 const express = require("express");
+const multer = require("multer");
+
+const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 
 const USERS = {
   15: {
     nickname: "foo",
+    ImageUrl: undefined,
+  },
+  16: {
+    nickname: "bar",
+    ImageUrl: undefined,
   },
 };
 
 router.param("id", async (req, res, next, value) => {
   try {
     const user = USERS[value];
-  
+
     if (!user) {
       const err = new Error("User not found");
       err.statusCode = 404;
       throw err;
     }
-  
+
     //@ts-ignore
     req.user = user;
     next();
   } catch (err) {
-    next(err)
+    next(err);
   }
 });
 
@@ -47,7 +55,11 @@ router.get("/:id", (req, res) => {
   }
   if (resMimeType === "html") {
     //@ts-ignore
-    res.render("user-profile", { nickname: req.user.nickname });
+    res.render("user-profile", {
+      nickname: req.user.nickname,
+      userId: req.params.id,
+      profileImgUrl: `/uploads/${req.user.ImageUrl}`,
+    });
   }
 });
 
@@ -66,6 +78,15 @@ router.post("/:id/nickname", (req, res) => {
   user.nickname = nickname;
 
   res.send(`User nickname updated: ${nickname}`);
+});
+
+router.post("/:id/profile", upload.single("profile"), (req, res, next) => {
+  const { user } = req;
+  const { filename } = req.file;
+  user.ImageUrl = filename;
+
+  // res.send("user profile img uploaded  " + filename);
+  res.redirect("back")
 });
 
 module.exports = router;
