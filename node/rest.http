@@ -1,0 +1,23 @@
+GET http://localhost:3000/posts
+
+###
+
+GET http://localhost:3000/posts/my_first_post
+
+###
+
+GET http://localhost:3000/posts/my_second_post
+
+###
+
+GET http://localhost:3000/posts/foo
+
+###
+
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "title": "foo aaaaw dsafasdf",
+  "content": "bar"
+}
