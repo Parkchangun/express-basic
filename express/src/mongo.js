@@ -71,9 +71,37 @@ const main = async () => {
     },
   ]);
 
-  const cursor = users.find({
-    "contacts.type": "phone",
-  });
+  // const cursor = users.find({
+  //   "contacts.type": "phone",
+  // });
+
+  const cursor = users.aggregate([
+    {
+      $lookup: {
+        from: "cities",
+        localField: "city",
+        foreignField: "name",
+        as: "city_info",
+      },
+    },
+    {
+      $match: {
+        $and: [
+          {
+            "city_info.population": {
+              $gte: 500,
+            },
+          },
+          {
+            birthYear: {
+              $gte: 2000,
+            },
+          },
+        ],
+      },
+    },
+  ]);
+
   await cursor.forEach(console.log);
 
   await client.close();
